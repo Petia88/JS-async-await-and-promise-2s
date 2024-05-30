@@ -1,9 +1,20 @@
-function multiplePromises() {
-     const promise1 = new Promise(resolve => setTimeout(()=> resolve('Promise 1 is resolved.'), 1000));
-     const promise2 = new Promise(resolve => setTimeout(()=> resolve('Promise 2 is resolved.'), 2000));
-     const promise3 = new Promise((_, reject) => setTimeout(()=> reject('Promise 3 is rejected.'), 3000));
+async function retryPromise(promiseFunc, retries = 3) {
+  for(let i = 0; i < retries; i++){
+    try {
+      const result = await promiseFunc();
+      return result;
+    } catch (error) {
+      if(i === retries - 1) throw error;
+    }
+  }
+}
 
-     Promise.allSettled([promise1, promise2, promise3]).then(results => {
-      results.forEach(result => console.log(result.status, result.value || result.reason));
-     })
+const unstablePromise = () => new Promise((resolve, reject) => {
+  Math.random() > 0.5 ? resolve('Success!') : reject(new Error('Failed!'));
+});
+
+function startRetry() {
+  retryPromise(unstablePromise)
+  .then(result => console.log(`Result: ${result}`))
+  .catch(error => console.log(`Error: ${error.message}`))
 }
