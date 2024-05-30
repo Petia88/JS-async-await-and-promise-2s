@@ -1,10 +1,7 @@
-async function fetchDataWithErrorHandling() {
-   try {
-     const response = fetch('https://swapi.dev/api/people/1');
-     if(!response.ok) throw new Error('Network response is not ok.');
-     const data = (await response).json();
-     console.log(data);
-   } catch (error) {
-    console.log('Error while fetching data: ', error);
-   }
+async function fetchParallel() {
+  const[res1, res2] = await Promise.all([
+    fetch('https://swapi.dev/api/people/1').then(res => res.json()),
+    fetch('https://swapi.dev/api/people/2').then(res => res.json())
+  ]);
+  console.log(res1, res2)
 }
